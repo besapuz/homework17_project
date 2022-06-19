@@ -6,8 +6,6 @@ from flask_restx.representations import output_json
 from flask_sqlalchemy import SQLAlchemy
 from marshmallow import Schema, fields
 
-from funk import get_name_genre_and_director
-
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -83,7 +81,13 @@ genres_ns = api.namespace('genres')
 @movies_ns.route('/')
 class MovieView(Resource):
     def get(self):
-        all_movie_genre_director = get_name_genre_and_director()
+        all_movie_genre_director = db.session.query(Movie.id,
+                                                    Movie.title,
+                                                    Movie.description,
+                                                    Movie.trailer,
+                                                    Movie.rating,
+                                                    Genre.name.label('genre'),
+                                                    Director.name.label('director')).join(Director).join(Genre)
         director_id = request.args.get('director_id')
         genre_id = request.args.get('genre_id')
 
@@ -107,7 +111,13 @@ class MovieView(Resource):
 class MovieView(Resource):
     def get(self, mid):
         try:
-            all_movie_genre_director = get_name_genre_and_director()
+            all_movie_genre_director = db.session.query(Movie.id,
+                                                        Movie.title,
+                                                        Movie.description,
+                                                        Movie.trailer,
+                                                        Movie.rating,
+                                                        Genre.name.label('genre'),
+                                                        Director.name.label('director')).join(Director).join(Genre)
             movie = all_movie_genre_director.filter(Movie.id == mid).one()
         except NameError:
             return "Фильм не найден"
