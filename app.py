@@ -48,8 +48,8 @@ class MovieSchema(Schema):
     rating = fields.Float()
     genre_id = fields.Int()
     director_id = fields.Int()
-    #director = fields.Str()
-    #genre = fields.Str()
+    director = fields.Str()
+    genre = fields.Str()
 
 
 class DirectorSchema(Schema):
@@ -111,7 +111,14 @@ class MovieView(Resource):
 class MovieView(Resource):
     def get(self, mid):
         try:
-            movie = db.session.query(Movie).get(mid)
+            all_movie_genre_director = db.session.query(Movie.id,
+                                                        Movie.title,
+                                                        Movie.description,
+                                                        Movie.trailer,
+                                                        Movie.rating,
+                                                        Genre.name.label('genre'),
+                                                        Director.name.label('director')).join(Director).join(Genre)
+            movie = all_movie_genre_director.filter(Movie.id == mid).one()
         except NameError:
             return "Фильм не найден", 404
         except AttributeError:
