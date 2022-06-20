@@ -48,6 +48,8 @@ class MovieSchema(Schema):
     rating = fields.Float()
     genre_id = fields.Int()
     director_id = fields.Int()
+    director = fields.Str()
+    genre = fields.Str()
 
 
 class DirectorSchema(Schema):
