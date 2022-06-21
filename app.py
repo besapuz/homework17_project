@@ -48,8 +48,8 @@ class MovieSchema(Schema):
     rating = fields.Float()
     genre_id = fields.Int()
     director_id = fields.Int()
-    #director = fields.Str()
-    #genre = fields.Str()
+    # director = fields.Str()
+    # genre = fields.Str()
 
 
 class DirectorSchema(Schema):
@@ -138,9 +138,10 @@ class MovieView(Resource):
         return f"Movie с id {mid} обновлен", 204
 
     def patch(self, mid):
-        if not mid:
-            return f"Фильм с id {mid} не найден", 404
         movie = db.session.query(Movie).get(mid)
+        if not movie:
+            return f"Фильм с id {mid} не найден", 404
+
         req_json = request.json
         if 'title' in req_json:
             movie.title = req_json['title']
@@ -161,9 +162,9 @@ class MovieView(Resource):
         return f"Movie с id {mid} обновлен", 204
 
     def delete(self, mid):
-        if not mid:
-            return f"Фильм с id {mid} не найден", 404
         movie = db.session.query(Movie).get(mid)
+        if not movie:
+            return f"Фильм с id {mid} не найден", 404
 
         db.session.delete(movie)
         db.session.commit()
